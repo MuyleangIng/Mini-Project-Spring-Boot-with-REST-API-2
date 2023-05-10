@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -49,6 +50,17 @@ public class ApiException {
                 .timestamp(LocalDateTime.now())
                 .message("Something Went Wrong")
                 .error(e.getReason())
+                .build();
+    }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public BaseError<?> handleImageSize(MaxUploadSizeExceededException e){
+        return BaseError.builder()
+                .status(false)
+                .code(HttpStatus.PAYLOAD_TOO_LARGE.value())
+                .timestamp(LocalDateTime.now())
+                .message("Maximum upload size exceeded : 1000KB")
+                .error(e.getMessage())
                 .build();
     }
 }
